@@ -1,4 +1,4 @@
-import './index.css'
+import './index.css';
 
 const Checkbox = ({ id, label, checked, name, onChange }: any) => {
   return (
@@ -9,4 +9,4 @@ const Checkbox = ({ id, label, checked, name, onChange }: any) => {
   )
 }
 
-export default Checkbox
+export default Checkbox;
