@@ -116,3 +116,15 @@
     font-weight: 500;
   }
 }
+
+.strong-color {
+  color: green;
+}
+
+.medium-color {
+  color: orange;
+}
+
+.weak-color {
+  color: red;
+}
