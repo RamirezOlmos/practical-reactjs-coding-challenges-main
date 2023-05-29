@@ -1,4 +1,4 @@
-export const taskList = [
+export let taskList = [
   {
     id: "01",
     title: "Go to gym",
@@ -41,4 +41,5 @@ export const taskList = [
     status: "In Progress",
     progress: 50,
   },
-]
+];
+
