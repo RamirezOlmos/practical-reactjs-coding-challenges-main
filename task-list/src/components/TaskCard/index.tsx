@@ -1,8 +1,8 @@
-import classNames from "classnames"
-import { ReactComponent as DeleteIcon } from "../../assets/icons/delete.svg"
-import { ReactComponent as EditIcon } from "../../assets/icons/edit.svg"
-import CircularProgressBar from "../CircularProgressBar"
-import "./style.scss"
+import classNames from "classnames";
+import { ReactComponent as DeleteIcon } from "../../assets/icons/delete.svg";
+import { ReactComponent as EditIcon } from "../../assets/icons/edit.svg";
+import CircularProgressBar from "../CircularProgressBar";
+import "./style.scss";
 
 const TaskCard = ({ task }: any) => {
   const { id, title, priority, status, progress } = task
@@ -31,4 +31,4 @@ const TaskCard = ({ task }: any) => {
   )
 }
 
-export default TaskCard
+export default TaskCard;
