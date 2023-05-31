@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
 import classNames from "classnames";
 import { ReactComponent as Close } from "../../assets/icons/close.svg";
@@ -9,20 +9,45 @@ import "./style.scss";
 
 
 interface PropAddEditTaskForm {
-  handleShowAddEditModal: () => void,
-  newTask: NewTask,
-  currentTaskList: NewTask[],
-  handleForm: (task: NewTask) => void
+  handleShowAddEditModal: (isAddOrEdit: string, id: string) => void,
+  idCounter: number,
+  modalAddOrEdit: string,
+  idDeleteEdit: string
 }
 
 const AddEditTaskForm: React.FC<PropAddEditTaskForm> = ({
   handleShowAddEditModal,
-  newTask,
-  handleForm
+  idCounter,
+  modalAddOrEdit,
+  idDeleteEdit
 }) => {
   const [highlightPriority, setHighlightPriority] = useState<string>('low');
-  const [task, setTask] = useState<NewTask>(newTask);
+  const [task, setTask] = useState<NewTask>({
+    id: '',
+    title: '',
+    priority: 'low',
+    status: 'To Do',
+    progress: 0,
+  });
+  console.log(modalAddOrEdit);
+  console.log(idDeleteEdit);
 
+  const getTask = async () => {
+    try {
+      if (modalAddOrEdit === 'Edit') {
+        const response = await axios.get(`http://localhost:3030/taskList/${idDeleteEdit}`);
+        const data = response.data;
+        setTask(data);
+        setHighlightPriority(data.priority);
+      }
+    } catch (error) {
+      console.error('Error updating object:', error);
+    }
+  };
+
+  useEffect(() => {
+    getTask();
+  }, [])
 
   const onChangeTaskInput = (event: React.ChangeEvent<HTMLInputElement>) => {
     event.preventDefault();
@@ -31,6 +56,23 @@ const AddEditTaskForm: React.FC<PropAddEditTaskForm> = ({
       title: event.target.value
     });
   }
+
+  useEffect(() => {
+    if (idCounter < 9) {
+      setTask({
+        ...task,
+        id: `0${idCounter + 1}`
+      });
+    }
+    else {
+      setTask({
+        ...task,
+        id: `${idCounter + 1}`
+      });
+    }
+  }, [])
+  console.log(task);
+
 
   const selectedPriority = (priority: string) => {
     setHighlightPriority(priority);
@@ -48,18 +90,28 @@ const AddEditTaskForm: React.FC<PropAddEditTaskForm> = ({
     }
   }
 
-
   return (
     <Modal>
       <form>
         <div className="add-edit-modal">
           <div className="flx-between">
-            <span className="modal-title">Add Task </span>
+            <span className="modal-title">
+              {
+                modalAddOrEdit === 'Add' ?
+                  'Add Task' :
+                  'Edit Task'
+              }
+            </span>
             <Close className="cp"
-              onClick={handleShowAddEditModal}
+              onClick={() => handleShowAddEditModal('Add', '')}
             />
           </div>
-          <Input label="Task" placeholder="Type your task here..."
+          <Input label="Task"
+            placeholder={
+              modalAddOrEdit === 'Add' ?
+                "Type your task here..." :
+                ""
+            }
             onChange={onChangeTaskInput}
             name="title" value={task.title}
           />
@@ -83,8 +135,12 @@ const AddEditTaskForm: React.FC<PropAddEditTaskForm> = ({
             </ul>
           </div>
           <div className="flx-right mt-50">
-            <Button title="Add"
-              onClick={() => handleForm(task)}
+            <Button title={
+              modalAddOrEdit === 'Add' ?
+                'Add' :
+                'Edit'
+            }
+              onClick={handleClickNewTask2}
               disabled={!task.title}
             />
           </div>
