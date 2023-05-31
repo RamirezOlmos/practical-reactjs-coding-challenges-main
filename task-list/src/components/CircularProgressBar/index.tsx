@@ -1,5 +1,5 @@
-import { FC } from "react"
-import "./style.scss"
+import { FC } from "react";
+import "./style.scss";
 
 interface Props {
   strokeWidth: number
@@ -39,4 +39,4 @@ const CircularProgressBar: FC<Props> = (props) => {
   )
 }
 
-export default CircularProgressBar
+export default CircularProgressBar;
