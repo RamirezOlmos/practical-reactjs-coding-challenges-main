@@ -9,31 +9,29 @@ import TaskCard from "./components/TaskCard";
 import { taskList } from "./siteData/taskList";
 
 const App = () => {
-  const [newTask, setNewTask] = useState<NewTask>({
-    id: '',
-    title: '',
-    priority: 'low',
-    status: 'To Do',
-    progress: 0,
-  });
-  const [currentTaskList, setCurrentTaskList] = useState<NewTask[]>(taskList);
+  const [currentTaskList, setCurrentTaskList] = useState<NewTask[]>([]);
   const [showDeleteModal, setShowDeleteModal] = useState<boolean>(false);
   const [showAddEditModal, setShowAddEditModal] = useState<boolean>(false);
-  const [id, setId] = useState<string>('');
-  const updateCount = useRef(0);
-  useEffect(() => {
-    updateCount.current += 1;
-  }, [updateCount.current])
+  const [idCounter, setIdCounter] = useState<number>(0);
+  const [idDeleteEdit, setIdDeleteEdit] = useState<string>('');
+  const [modalAddOrEdit, setModalAddOrEdit] = useState<string>('');
 
-  const handleShowAddEditModal = () => {
+  const handleShowAddEditModal = (isAddOrEdit: string, id: string) => {
     setShowAddEditModal(!showAddEditModal);
+    setModalAddOrEdit(isAddOrEdit);
+    setIdDeleteEdit(id);
+  }
+
+  const handleShowDeleteModal = (id: string) => {
+    setShowDeleteModal(!showDeleteModal);
+    setIdDeleteEdit(id);
   }
 
   const fetchData = async () => {
     try {
 
       const response = await axios.get('http://localhost:3030/taskList');
-      const data = response.data;
+      const data = response.data.reverse();
       setCurrentTaskList(data);
 
     } catch (error) {
@@ -41,42 +39,13 @@ const App = () => {
     }
   }
 
-  const addIdNewTask = () => {
-    if (currentTaskList.length < 9) {
-      setId(`0${currentTaskList.length + 1}`);
-    }
-    else {
-      setId(`${currentTaskList.length + 1}`);
-    }
+  useEffect(() => {
+    fetchData();
+  }, [showDeleteModal]);
 
-    setNewTask({
-      ...newTask,
-      id: id
-    });
-  }
-
-  const handleForm = (task: NewTask) => {
-    return setNewTask(task)
-  }
-
-
-
-  console.log(newTask);
-
-
-
-  /* useEffect(() => { */
-  /*   fetchData(); */
-  /* }, []); */
-  /**/
-  /* useEffect(() => { */
-  /*   addIdNewTask(); */
-  /* }, [currentTaskList]); */
-
-  const anyArray = [1, 2, 3, 4, 5, 6, 7, 8, 9];
-  const numbersToMove = anyArray.slice(6).reverse();
-  const changeArray = numbersToMove.concat(anyArray.slice(0, 6));
-  /* console.log(changeArray); */
+  useEffect(() => {
+    setIdCounter(currentTaskList.length);
+  }, [currentTaskList]);
 
   return (
     <div className="container">
@@ -84,26 +53,34 @@ const App = () => {
         <div className="top-title">
           <h2>Task List</h2>
           <Button title="Add Task" icon={<Add />}
-            onClick={handleShowAddEditModal}
+            onClick={() => handleShowAddEditModal('Add', '')}
           />
         </div>
         <div className="task-container">
           {currentTaskList.map((task) => (
-            <TaskCard task={task} />
+            <TaskCard key={task.id} task={task}
+              handleShowDeleteModal={handleShowDeleteModal}
+              handleShowAddEditModal={handleShowAddEditModal}
+            />
           ))}
         </div>
       </div>
       {
         showAddEditModal && (
           <AddEditTaskForm handleShowAddEditModal={handleShowAddEditModal}
-            newTask={newTask}
-            currentTaskList={currentTaskList}
-            handleForm={handleForm}
-
+            idCounter={idCounter}
+            modalAddOrEdit={modalAddOrEdit}
+            idDeleteEdit={idDeleteEdit}
           />
         )
       }
-      {showDeleteModal && <DeleteModal />}
+      {
+        showDeleteModal && (
+          <DeleteModal handleShowDeleteModal={handleShowDeleteModal}
+            idDeleteEdit={idDeleteEdit}
+          />
+        )
+      }
     </div>
   )
 }
