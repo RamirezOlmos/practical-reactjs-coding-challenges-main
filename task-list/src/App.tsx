@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import axios from "axios";
 import "./App.scss";
 import { ReactComponent as Add } from "./assets/icons/add.svg";
@@ -6,7 +6,8 @@ import AddEditTaskForm from "./components/AddEditTaskForm";
 import Button from "./components/Button";
 import DeleteModal from "./components/DeleteModal";
 import TaskCard from "./components/TaskCard";
-import { taskList } from "./siteData/taskList";
+import { createStringId } from "../src/helpers/createStringId";
+
 
 const App = () => {
   const [currentTaskList, setCurrentTaskList] = useState<NewTask[]>([]);
@@ -44,7 +45,13 @@ const App = () => {
   }, [showDeleteModal]);
 
   useEffect(() => {
-    setIdCounter(currentTaskList.length);
+    let idToCheck = createStringId(currentTaskList.length);
+    const isIdPresent = currentTaskList.some(
+      (task) => task.id === idToCheck
+    )
+
+    if (isIdPresent) setIdCounter(currentTaskList.length + 1);
+    else setIdCounter(currentTaskList.length);
   }, [currentTaskList]);
 
   return (
