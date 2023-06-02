@@ -6,6 +6,7 @@ import Button from "../Button";
 import Input from "../Input";
 import Modal from "../Modal";
 import "./style.scss";
+import { createStringId } from "../../helpers/createStringId";
 
 
 interface PropAddEditTaskForm {
@@ -29,8 +30,6 @@ const AddEditTaskForm: React.FC<PropAddEditTaskForm> = ({
     status: 'To Do',
     progress: 0,
   });
-  console.log(modalAddOrEdit);
-  console.log(idDeleteEdit);
 
   const getTask = async () => {
     try {
@@ -58,20 +57,11 @@ const AddEditTaskForm: React.FC<PropAddEditTaskForm> = ({
   }
 
   useEffect(() => {
-    if (idCounter < 9) {
-      setTask({
-        ...task,
-        id: `0${idCounter + 1}`
-      });
-    }
-    else {
-      setTask({
-        ...task,
-        id: `${idCounter + 1}`
-      });
-    }
+    setTask({
+      ...task,
+      id: createStringId(idCounter)
+    });
   }, [])
-  console.log(task);
 
 
   const selectedPriority = (priority: string) => {
@@ -84,7 +74,12 @@ const AddEditTaskForm: React.FC<PropAddEditTaskForm> = ({
 
   const handleClickNewTask2 = async () => {
     try {
-      await axios.post('http://localhost:3030/taskList', task);
+      if (modalAddOrEdit === 'Add') {
+        await axios.post('http://localhost:3030/taskList', task);
+      }
+      if (modalAddOrEdit === 'Edit') {
+        await axios.put(`http://localhost:3030/taskList/${idDeleteEdit}`, task);
+      }
     } catch (error) {
       console.log('Error:', error);
     }
